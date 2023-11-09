@@ -2,6 +2,7 @@ import numpy as np
 
 class History:
     def __init__(self, max_size = 10000):
+        self.shape = None
         self.height = max_size
     def set(self, **kwargs):
         # Flattening the inputs to put it in np.array

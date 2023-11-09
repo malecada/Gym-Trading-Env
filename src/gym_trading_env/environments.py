@@ -18,7 +18,10 @@ def basic_reward_function(history : History):
     return np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -2])
 
 def hindsight_reward_function(history : History, weight: float, horizon: int):
-    return np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -2]) + weight * (np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -horizon]))
+    if history.size < horizon:
+        return np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -2])
+    else:
+        return np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -2]) + weight * (np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -horizon]))
 
 def dynamic_feature_last_position_taken(history):
     return history['position', -1]
@@ -179,7 +182,7 @@ class TradingEnv(gym.Env):
         
 
         # self._idx = 0
-        self._idx = self.horizon
+        # self._idx = self.horizon
         if self.windows is not None: self._idx = self.windows - 1
         if self.max_episode_duration != 'max':
             self._idx = np.random.randint(
