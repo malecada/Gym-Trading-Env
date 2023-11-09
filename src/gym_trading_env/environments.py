@@ -178,7 +178,8 @@ class TradingEnv(gym.Env):
         self._limit_orders = {}
         
 
-        self._idx = 0
+        # self._idx = 0
+        self._idx = self.horizon
         if self.windows is not None: self._idx = self.windows - 1
         if self.max_episode_duration != 'max':
             self._idx = np.random.randint(
