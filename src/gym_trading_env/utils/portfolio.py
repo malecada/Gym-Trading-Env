@@ -19,9 +19,9 @@ class Portfolio:
         # Repay interest
         current_position = self.position(price)
         interest_reduction_ratio = 1
-        if (position <= 0 and current_position < 0):
+        if position <= 0 and current_position < 0:
             interest_reduction_ratio = min(1, position/current_position)
-        elif (position >= 1 and current_position > 1):
+        elif position >= 1 and current_position > 1:
             interest_reduction_ratio = min(1, (position-1)/(current_position-1))
         if interest_reduction_ratio < 1:
             self.asset = self.asset - (1-interest_reduction_ratio) * self.interest_asset

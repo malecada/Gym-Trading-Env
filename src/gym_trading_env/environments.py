@@ -17,6 +17,9 @@ import warnings
 def basic_reward_function(history : History):
     return np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -2])
 
+def hindsight_reward_function(history : History, weight: float, horizon: int):
+    return np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -2]) + weight * (np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -horizon]))
+
 def dynamic_feature_last_position_taken(history):
     return history['position', -1]
 
@@ -84,6 +87,8 @@ class TradingEnv(gym.Env):
                 positions : list = [0, 1],
                 dynamic_feature_functions = [dynamic_feature_last_position_taken, dynamic_feature_real_position],
                 reward_function = basic_reward_function,
+                weight = 0.5,
+                horizon = 10,
                 windows = None,
                 trading_fees = 0,
                 borrow_interest_rate = 0,
@@ -101,6 +106,8 @@ class TradingEnv(gym.Env):
         self.positions = positions
         self.dynamic_feature_functions = dynamic_feature_functions
         self.reward_function = reward_function
+        self.weight = weight
+        self.horizon = horizon
         self.windows = windows
         self.trading_fees = trading_fees
         self.borrow_interest_rate = borrow_interest_rate
@@ -266,7 +273,12 @@ class TradingEnv(gym.Env):
             reward = 0
         )
         if not done:
-            reward = self.reward_function(self.historical_info)
+            if self.reward_function is basic_reward_function:
+                reward = self.reward_function(self.historical_info)
+            elif self.reward_function is hindsight_reward_function:
+                reward = self.reward_function(self.historical_info, self.weight, self.horizon)
+            else:
+                raise Exception("Unknown reward function")
             self.historical_info["reward", -1] = reward
 
         if done or truncated:
