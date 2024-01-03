@@ -179,9 +179,8 @@ class TradingEnv(gym.Env):
         self._step = 0
         self._position = np.random.choice(self.positions) if self.initial_position == 'random' else self.initial_position
         self._limit_orders = {}
-        
 
-        # self._idx = 0
+        self._idx = 0
         # self._idx = self.horizon
         if self.windows is not None: self._idx = self.windows - 1
         if self.max_episode_duration != 'max':
@@ -234,7 +233,8 @@ class TradingEnv(gym.Env):
             for position, params in self._limit_orders.items():
                 if position != self._position and params['limit'] <= ticker["high"] and params['limit'] >= ticker["low"]:
                     self._trade(position, price= params['limit'])
-                    if not params['persistent']: del self._limit_orders[position]
+                    if not params['persistent']:
+                        del self._limit_orders[position]
 
 
     
@@ -251,7 +251,7 @@ class TradingEnv(gym.Env):
 
         self._take_action_order_limit()
         price = self._get_price()
-        self._portfolio.update_interest(borrow_interest_rate= self.borrow_interest_rate)
+        self._portfolio.update_interest(borrow_interest_rate=self.borrow_interest_rate)
         portfolio_value = self._portfolio.valorisation(price)
         portfolio_distribution = self._portfolio.get_portfolio_distribution()
 
@@ -268,7 +268,7 @@ class TradingEnv(gym.Env):
             idx = self._idx,
             step = self._step,
             date = self.df.index.values[self._idx],
-            position_index =position_index,
+            position_index = position_index,
             position = self._position,
             real_position = self._portfolio.real_position(price),
             data =  dict(zip(self._info_columns, self._info_array[self._idx])),
