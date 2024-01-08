@@ -208,8 +208,8 @@ class TradingEnv(gym.Env):
             portfolio_distribution = self._portfolio.get_portfolio_distribution(),
             reward = 0,
         )
-
-        return self._get_obs(), self.historical_info[0]
+        return self._get_obs()
+        # return self._get_obs(), self.historical_info[0]
 
     def render(self):
         pass
