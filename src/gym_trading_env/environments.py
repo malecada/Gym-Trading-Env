@@ -288,7 +288,9 @@ class TradingEnv(gym.Env):
         if done or truncated:
             self.calculate_metrics()
             self.log()
-        return self._get_obs(),  self.historical_info["reward", -1], done, truncated, self.historical_info[-1]
+
+        done_truncated = done or truncated
+        return self._get_obs(),  self.historical_info["reward", -1], done_truncated, self.historical_info[-1]
 
     def add_metric(self, name, function):
         self.log_metrics.append({
